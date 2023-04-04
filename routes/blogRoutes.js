@@ -1,6 +1,7 @@
 // Import the necessary modules
 import express from "express";
 import { addBlog, getBlogs } from "../controller/blogController.js";
+
 // Create a new router instance
 const blogRoutes = express.Router();
 

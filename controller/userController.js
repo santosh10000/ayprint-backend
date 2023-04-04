@@ -20,38 +20,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// const loginUser = async (req, res) => {
-//   const { username, password } = req.body;
-//   console.log(username, password);
-
-//   if (!username || !password) {
-//     res.status(401).send({ msg: `Please provide both credentials` });
-//   }
-
-//   try {
-//     const user = await User.findOne({ username });
-//     if (!user) {
-//       return res
-//         .status(401)
-//         .send({ success: false, msg: `Invalid credentials, please try again` });
-//     }
-
-//     const isMatch = await user.comparePassword(password);
-//     if (!isMatch) {
-//       return res.status(401).send({ success: false, msg: `Invalid password` });
-//     }
-
-//     const token = await user.createJWT();
-//     console.log(token);
-//     attachCookies({ res, token });
-//     res
-//       .status(200)
-//       .json({ success: true, msg: `User authenticated!`, user: username });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(400).send({ msg: error });
-//   }
-// };
 const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -63,12 +31,10 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ username });
     if (!user) {
-      return res
-        .status(401)
-        .send({
-          success: false,
-          msg: `Invalid credentials, please try again!`,
-        });
+      return res.status(401).send({
+        success: false,
+        msg: `Invalid credentials, please try again!`,
+      });
     }
 
     const isMatch = await user.comparePassword(password);
@@ -79,8 +45,13 @@ const loginUser = async (req, res) => {
     }
 
     const token = await user.createJWT();
-    console.log(token);
-    attachCookies({ res, token });
+    console.log("token is " + token + "      ");
+
+    try {
+      attachCookies({ res, token });
+      console.log(`cookies set successfully`);
+    } catch (error) {}
+
     res
       .status(200)
       .json({ success: true, msg: `User authenticated!`, user: username });
