@@ -19,12 +19,14 @@ const blogSchema = new Schema({
   },
   testimonial: {
     type: String,
-    required: true,
-  },
-  image: {
-    type: String,
     required: false,
   },
+  image: [
+    {
+      type: String,
+      required: false,
+    },
+  ],
   review: {
     type: String,
     required: false,
