@@ -26,7 +26,15 @@ app.use("/contact", contactRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/login", userRoutes);
 //Establishing connection with database
-
+const connection = process.env.CONNECTION_STRING;
+const container = process.env.CONTAINER_NAME;
+const connectionObject = {
+  connection: connection,
+  container: container,
+};
+export const startConnection = () => {
+  return connectionObject;
+};
 const start = async () => {
   try {
     await connectDb(process.env.MONGO_URL);
@@ -38,3 +46,4 @@ const start = async () => {
   }
 };
 start();
+//export { startConnection };

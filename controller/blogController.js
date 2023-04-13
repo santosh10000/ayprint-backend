@@ -4,8 +4,7 @@ import multer from "multer";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
-const connectionString =
-  "DefaultEndpointsProtocol=https;AccountName=ayprint;AccountKey=69biLkpaDcWGnuFxbGVndBtZ7aJ53oaZkOfIAmxlhVoD2Qh4SgUOeOsYiRvZAy+RUuKctkacl7jD+AStLDSwow==;EndpointSuffix=core.windows.net";
+const connectionString = process.env.CONNECTION_STRING;
 const blobServiceClient =
   BlobServiceClient.fromConnectionString(connectionString);
 
@@ -26,6 +25,7 @@ const upload = multer({
 
 const addBlog = async (req, res) => {
   try {
+    console.log(req.body);
     await upload(req, res, async (err) => {
       if (err) {
         return res.status(400).send({ success: false, error: err.message });
@@ -110,27 +110,61 @@ const updateBlog = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+const toBeUpdateBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({
+      $or: [
+        { testimonial: { $exists: false } },
+        { testimonial: "" },
+        { reviewer: { $exists: false } },
+        { reviewer: "" },
+        { review: { $exists: false } },
+        { review: "" },
+        { review: null },
+      ],
+    }).lean();
+
+    console.log(`formattedBlogs is ` + blogs);
+
+    res.status(200).send({ success: true, data: blogs });
+  } catch (error) {
+    res.status(400).send({ success: false, error: error.message });
+  }
+};
 
 const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({});
-    const formattedBlogs = blogs.map((blog) => ({
-      id: blog._id,
-      title: blog.title,
-      tags: blog.tags,
-      description: blog.description,
-      image: blog.image,
-      testimonial: blog.testimonial || "",
-      reviewer: blog.reviewer || "",
-      review: blog.review || "",
-    }));
+    const blogs = await Blog.find({
+      $and: [
+        { testimonial: { $ne: "" } },
+        { reviewer: { $ne: "" } },
+        { review: { $ne: "" } },
+        { testimonial: { $ne: null } },
+        { reviewer: { $ne: null } },
+        { review: { $ne: null } },
+      ],
+    }).lean();
+    // const formattedBlogs = blogs.map((blog) => ({
+    //   id: blog._id,
+    //   title: blog.title,
+    //   tags: blog.tags,
+    //   description: blog.description,
+    //   image: blog.image,
+    //   testimonial: blog.testimonial,
+    //   reviewer: blog.reviewer,
+    //   review: blog.review,
+    // }));
+    const formattedBlogs = blogs.filter(
+      (blog) =>
+        blog.reviewer !== "" && blog.testimonial !== "" && blog.review !== ""
+    );
     res.status(200).send({ success: true, data: formattedBlogs });
   } catch (error) {
     res.status(400).send({ success: false, error: error.message });
   }
 };
 
-export { addBlog, getBlogs, updateBlog };
+export { addBlog, getBlogs, updateBlog, toBeUpdateBlogs };
 // import { BlobServiceClient } from "@azure/storage-blob";
 // import Blog from "../models/Blogs.js";
 // import multer from "multer";
