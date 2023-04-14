@@ -15,9 +15,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v2.5.3
         with:
           node-version: '16.x'
 
@@ -54,4 +56,3 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9FF9203EACA745029BF55472C420A10A }}
           package: .
-
