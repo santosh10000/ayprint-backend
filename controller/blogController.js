@@ -25,7 +25,7 @@ const upload = multer({
 
 const addBlog = async (req, res) => {
   try {
-    console.log(req.body);
+    req.body;
     await upload(req, res, async (err) => {
       if (err) {
         return res.status(400).send({ success: false, error: err.message });
@@ -85,9 +85,9 @@ const addBlog = async (req, res) => {
 
 const updateBlog = async (req, res) => {
   const { id } = req.params;
-  console.log("id is " + id);
+  "id is " + id;
   const { testimonial, reviewer, review } = req.body;
-  console.log(req.body.testimonial, reviewer, review);
+  req.body.testimonial, reviewer, review;
   try {
     let blog = await Blog.findById(id);
 
@@ -124,7 +124,7 @@ const toBeUpdateBlogs = async (req, res) => {
       ],
     }).lean();
 
-    console.log(`formattedBlogs is ` + blogs);
+    `formattedBlogs is ` + blogs;
 
     res.status(200).send({ success: true, data: blogs });
   } catch (error) {
@@ -144,16 +144,7 @@ const getBlogs = async (req, res) => {
         { review: { $ne: null } },
       ],
     }).lean();
-    // const formattedBlogs = blogs.map((blog) => ({
-    //   id: blog._id,
-    //   title: blog.title,
-    //   tags: blog.tags,
-    //   description: blog.description,
-    //   image: blog.image,
-    //   testimonial: blog.testimonial,
-    //   reviewer: blog.reviewer,
-    //   review: blog.review,
-    // }));
+
     const formattedBlogs = blogs.filter(
       (blog) =>
         blog.reviewer !== "" && blog.testimonial !== "" && blog.review !== ""
